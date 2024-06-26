@@ -109,7 +109,7 @@ class GitHubCrawler:
 
 
 def main():
-    with open('input-example.json', 'r') as file:
+    with open('input.json', 'r') as file:
         input_data = json.load(file)
 
     keywords = input_data["keywords"]
