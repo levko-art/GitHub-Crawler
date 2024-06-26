@@ -4,7 +4,6 @@ import logging
 from typing import List, Dict, Union
 import requests
 from bs4 import BeautifulSoup
-import yaml
 
 
 logging.basicConfig(level=logging.INFO)
@@ -109,22 +108,23 @@ class GitHubCrawler:
         return language_stats
 
 
-def load_proxies_from_yaml(file_path: str) -> List[str]:
-    with open(file_path, 'r') as file:
-        data = yaml.safe_load(file)
-        return data.get('proxies', [])
-
-
 def main():
-    print("Welcome to the GitHub Crawler!")
-    keywords = input("Enter the keywords to search for (comma-separated): ").split(',')
-    search_type = input("Enter the type of search (Repositories, Issues, Wikis): ")
+    with open('input-example.json', 'r') as file:
+        input_data = json.load(file)
 
-    proxies = load_proxies_from_yaml('proxies.yaml')
+    keywords = input_data["keywords"]
+    search_type = input_data["type"]
+    proxies = input_data["proxies"]
 
     crawler = GitHubCrawler(proxies)
     results = crawler.search_github(keywords, search_type)
-    logger.info(results)
+
+    output = [{"url": result["url"]} for result in results]
+
+    with open('output.json', 'w') as file:
+        json.dump(output, file, indent=2)
+
+    print("Results written to output.json")
 
 
 if __name__ == "__main__":

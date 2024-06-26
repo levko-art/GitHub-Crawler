@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest.mock import patch, MagicMock
 import requests
-from app.main import GitHubCrawler, load_proxies_from_yaml
+from app.main import GitHubCrawler
 
 
 class TestGitHubCrawler(unittest.TestCase):
@@ -62,8 +62,7 @@ class TestGitHubCrawler(unittest.TestCase):
 
     @patch('app.main.GitHubCrawler.make_request')
     @patch('app.main.BeautifulSoup')
-    def test_extract_repo_languages(self, mock_beautiful_soup,
-                                    mock_make_request):
+    def test_extract_repo_languages(self, mock_beautiful_soup, mock_make_request):
         mock_response = MagicMock()
         mock_make_request.return_value = mock_response
 
@@ -77,19 +76,3 @@ class TestGitHubCrawler(unittest.TestCase):
         languages = self.crawler.extract_repo_languages(repo_url)
 
         self.assertEqual(languages, {'Python': '60.0%'})
-
-    @patch('builtins.open', new_callable=unittest.mock.mock_open, read_data="proxies:\n  - http://proxy1\n  - http://proxy2\n")
-    @patch('app.main.yaml.safe_load')
-    def test_load_proxies_from_yaml(self, mock_safe_load, mock_open):
-        mock_safe_load.return_value = {
-            'proxies': ['http://proxy1', 'http://proxy2']}
-
-        file_path = '../app/proxies.yaml'
-        proxies = load_proxies_from_yaml(file_path)
-
-        mock_open.assert_called_once_with(file_path, 'r')
-        self.assertEqual(proxies, ['http://proxy1', 'http://proxy2'])
-
-
-if __name__ == "__main__":
-    unittest.main()
